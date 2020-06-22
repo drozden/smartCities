@@ -1,0 +1,61 @@
+version: '3'
+
+services: 
+  angular_server:
+    build: angular_server
+    expose:
+      - 4200
+    ports:
+      - "4200:4200"
+    container_name: angular_container
+    restart: always
+    links:
+      - express_server
+    command:
+      bash -c "npm install && npm start"
+      # && npm install -g @angular/cli && npm install chart.js --save && ng serve --host 0.0.0.0 --disableHostCheck"
+      # "npm install -g @angular/cli "
+      # && npm install nodemon && npm install chart.js && ng serve --host 0.0.0.0 --disableHostCheck"
+      # RUN npm install -g nodemon
+# RUN npm install chart.js --save
+      # npm cache clean --force  && 
+      # && npm install
+      # npm install -g @angular/cli && 
+      # npm install -g nodemon && npm install chart.js --save && 
+
+  
+  express_server:
+    build: express_server
+    expose: 
+      - 3000
+    ports: 
+      - "3000:3000"
+    depends_on: 
+      - database
+    container_name: express_server_container
+    restart: always
+    links:
+      - database
+
+  database: 
+    image: mongo
+    expose:
+      - 27017
+    ports:
+      - "27017:27017"
+    container_name: database_container
+    restart: always
+
+  # angular_test:
+  #   build: angular_server
+  #   expose:
+  #     - 4201
+  #   ports:
+  #     - "4201:4200"
+  #   container_name: angular_test_container
+  #   restart: always
+  #   links:
+  #     - express_server
+  #   command: 
+  #     bash -c "npm cache clean --force && npm install && npm install -g @angular/cli && ng serve --host 0.0.0.0 --disableHostCheck && ng test "
+

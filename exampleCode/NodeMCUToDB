@@ -1,0 +1,62 @@
+//Make sure to have the NodeMCU 1.0 (ESP-12E Module)
+//board selected under the Tools tab.
+//
+//To upload, when it's plugged in, go to the
+//Tools tab, and under Port, I usually have
+//to select COM9 to get it to upload.
+//
+//Go to Serial Monitor under the Tools tab
+//to see the output of the code. Make sure 
+//11520 is selected when you pull the monitor
+//up.
+
+//Install these libraries
+#include <ArduinoJson.h>
+#include <ESP8266HTTPClient.h>
+#include <ESP8266WiFi.h>
+
+//----------- Enter you Wi-Fi Details---------//
+char ssid[] = "SSID Here"; //SSID
+char pass[] = "Password Here"; // Password
+
+WiFiClient  client;
+
+void setup()
+{
+  Serial.begin(115200);
+  WiFi.mode(WIFI_STA);
+}
+void loop()
+{
+  //Connects to the wifi with given credentials
+  //In the loop so that if it disconnects from wifi,
+  //it keeps trying
+  if (WiFi.status() != WL_CONNECTED){
+    Serial.print("Attempting to connect to SSID: ");
+    Serial.println(ssid);
+    //Prints a . until connected to wifi
+    while (WiFi.status() != WL_CONNECTED)
+    {
+      WiFi.begin(ssid, pass);
+      Serial.print(".");
+      delay(5000);
+    }
+    Serial.println("\nConnected.");
+  }
+
+  //The actual request being sent. Make sure it's JSON Format
+  //Right now it's hard coded, but will need to put in sensor data.
+  //API currently only setup for THP sensor. Will need more setup
+  //to accept the other sensors data.
+  Serial.println("[Sending a request]");
+  String inputs = "{\"timestamp\": \"TODAY\",\"device_id\": \"hunters_nodemcu\",\"temp\": 99,\"humidity\": 99,\"gas\": 99,\"pressure\": 99}";
+  HTTPClient http;
+  http.begin("http://scdatalake.duckdns.org:3000/api/sensor/thp");
+  http.addHeader("Content-Type", "application/json");
+  int httpCode = http.POST(inputs);
+  String payload = http.getString();
+  Serial.println(httpCode);
+  Serial.println(payload);
+  http.end();
+  delay(1000);
+}

@@ -1,0 +1,13 @@
+
+Once Docker has been installed, run 
+ "docker-compose up --build"
+ to build and run the stack on your local machine. 
+
+ "docker-compose down"
+ Takes the containers offline.
+
+ Sometimes the containers will not be brought down successfully, so running
+ "docker-compose down --remove-orphans"
+ will fix the issue.
+
+
